@@ -2,10 +2,6 @@
 title: 'Reproductible Research Project I: Activity Data'
 author: "kamcculloch"
 date: "September 20, 2015"
-output:
-  pdf_document: default
-  html_document:
-    keep_md: yes
 ---
 #Loading and preprocessing the data
 
