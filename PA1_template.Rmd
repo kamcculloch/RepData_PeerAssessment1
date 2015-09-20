@@ -1,25 +1,58 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+data <- read.csv("activity.csv")
+library("lubridate")
 
+#Find total number of steps taken per day
+data$date <- as.Date(data$date)
+StepsAgg <- aggregate(steps ~ date, data, sum, na.rm = TRUE)
+hist(StepsAgg$steps, main = "Total steps by day", xlab = "day")
 
-## Loading and preprocessing the data
+#Find Mean and Med Steps
+mean(StepsAgg$steps)
+median(StepsAgg$steps)
 
+# Average Daily Activity pattern
+StepsIntAvg <- aggregate(steps ~ interval, data, mean, na.rm = TRUE)
+plot(StepsIntAvg$interval,StepsIntAvg$steps, type="l")
 
+#Find the Max
+Max <-  StepsIntAvg[order(-StepsIntAvg$steps),]
+head(Max)
 
-## What is mean total number of steps taken per day?
+#Find amount of NAs 
+NAs <- sum(is.na(data))
+NAs
 
+#Replace the NAs with interval average
+StepsIntAvg <- aggregate(steps ~ interval, data, mean)
+RepNA <- numeric()
+for (i in 1:nrow(data)) {
+  Rep <- data[i, ]
+  if (is.na(Rep$steps)) {
+    steps <- subset(StepsIntAvg, interval == Rep$interval)$steps
+  } else {
+    steps <- Rep$steps
+  }
+  RepNA <- c(RepNA, steps)
+}
+DataNAReplace <- data
+DataNAReplace$steps <- RepNA
 
+#
+DataNAReplaceAgg <- aggregate(steps ~ date, DataNAReplace, sum)
+hist(DataNAReplaceAgg$steps, main = "Total steps by day", xlab = "day")
+mean(DataNAReplaceAgg$steps)
+median(DataNAReplaceAgg$steps)
 
-## What is the average daily activity pattern?
+days <-wday(DataNAReplace$date)
+daylevel <- vector()
+for (i in 1:nrow(DataNAReplace)) {
+  if (days[i] >1 & days[i] <7) {
+    daylevel[i] <- "Weekday"
+  } else {
+    daylevel[i] <- "Weekend"
+  }
+}
 
+DataNAReplace$daylevel <- daylevel
+NewStepsAgg <- aggregate(steps ~ interval + daylevel, DataNAReplace, mean)
 
-
-## Imputing missing values
-
-
-
-## Are there differences in activity patterns between weekdays and weekends?
