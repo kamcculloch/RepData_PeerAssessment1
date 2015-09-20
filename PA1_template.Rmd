@@ -111,35 +111,4 @@ xyplot(steps ~ interval | daylevel, NewStepsAgg, type = "l", layout = c(1, 2),
     xlab = "Intervals: 5 Minute", 
     ylab = "Average Steps")
 ```
-RepNA <- numeric()
-for (i in 1:nrow(data)) {
-  Rep <- data[i, ]
-  if (is.na(Rep$steps)) {
-    steps <- subset(StepsIntAvg, interval == Rep$interval)$steps
-  } else {
-    steps <- Rep$steps
-  }
-  RepNA <- c(RepNA, steps)
-}
-DataNAReplace <- data
-DataNAReplace$steps <- RepNA
-
-#
-DataNAReplaceAgg <- aggregate(steps ~ date, DataNAReplace, sum)
-hist(DataNAReplaceAgg$steps, main = "Total steps by day", xlab = "day")
-mean(DataNAReplaceAgg$steps)
-median(DataNAReplaceAgg$steps)
-
-days <-wday(DataNAReplace$date)
-daylevel <- vector()
-for (i in 1:nrow(DataNAReplace)) {
-  if (days[i] >1 & days[i] <7) {
-    daylevel[i] <- "Weekday"
-  } else {
-    daylevel[i] <- "Weekend"
-  }
-}
-
-DataNAReplace$daylevel <- daylevel
-NewStepsAgg <- aggregate(steps ~ interval + daylevel, DataNAReplace, mean)
 
